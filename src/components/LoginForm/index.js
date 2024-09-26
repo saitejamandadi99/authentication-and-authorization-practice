@@ -16,6 +16,31 @@ class LoginForm extends Component {
     this.setState({password: event.target.value})
   }
 
+  onSubmitSuccess = () => {
+    const {history} = this.props
+    history.push('/') //user can go forward and backward in the browser and changes to home Route
+    // history.replace('/) cannot go to forward or backward
+  }
+
+  submitForm = async event => {
+    event.preventDefault() //added to prevent the default behaviour of the form
+    const {username, password} = this.state
+    const userDetails = {username, password}
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(userDetails),
+    }
+    const url = 'https://apis.ccbp.in/login'
+
+    const response = await fetch(url, options) // object that contains the success or failure details
+    const data = await response.json() // if success comtains JWT token or else it contains the error msg and status code 400
+    console.log(data)
+    console.log(response)
+    if (response.ok === true) {
+      this.onSubmitSuccess()
+    }
+  }
+
   renderPasswordField = () => {
     const {password} = this.state
     return (
@@ -65,7 +90,7 @@ class LoginForm extends Component {
           className="login-image"
           alt="website login"
         />
-        <form className="form-container">
+        <form className="form-container" onSubmit={this.submitForm}>
           <img
             src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-logo-img.png"
             className="login-website-logo-desktop-image"
